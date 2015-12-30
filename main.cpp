@@ -275,6 +275,21 @@ static int process_config(VolumeManager *vm) {
     }
 
     fclose(fp);
+
+    if (!(fp = fopen("/etc/usb_modeswitch.d/u3glist.txt", "r"))) {
+        // try to open file in system directory
+        if (!(fp = fopen("/system/etc/usb_modeswitch.d/u3glist.txt", "r"))) {
+            return -1;
+        }
+    }
+
+    while (fgets(line, sizeof(line), fp)) {
+        int vid, pid;
+        if (sscanf(line, "%x_%x", &vid, &pid) == 2) {
+            vm->addFilterDevice(vid, pid);
+        }
+    }
+    fclose(fp);
     return 0;
 
 out_syntax:

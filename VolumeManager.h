@@ -32,6 +32,9 @@
 #define CUSTOM_SECOND_LUN_NUM 1
 #endif
 
+/* The max num of 3g dongle support */
+#define MAX_U3G_NUM 1024
+
 typedef enum { ASEC, OBB } container_type_t;
 
 class ContainerData {
@@ -75,6 +78,11 @@ private:
     int                    mUmsDirtyRatio;
     int                    mVolManagerDisabled;
     int                    mNextLunNumber;
+
+    // filter dev for 3g dongle sda block event
+    dev_t                  mFilterKdev;
+    int                    mFilterCount;
+    int                    mFilterVidPid[MAX_U3G_NUM];
 
 public:
     virtual ~VolumeManager();
@@ -148,6 +156,9 @@ public:
     int getNumDirectVolumes(void);
     int getDirectVolumeList(struct volume_info *vol_list);
     int unmountAllAsecsInDir(const char *directory);
+
+    int addFilterDevice(int vid, int pid);
+    bool isFilterDevice(int vid, int pid);
 
 private:
     VolumeManager();
